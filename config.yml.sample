@@ -1,0 +1,34 @@
+gnrd_api_url: 'http://gnrd.globalnames.org/name_finder.json'
+resolver_api_url: 'http://resolver.globalnames.org/name_resolvers.json'
+root_file_path: '/Users/dshorthouse/Documents/Canadian_Entomologist'
+crossref_api_url: 'http://search.crossref.org/links'
+biblio_api_url: 'http://biblio.globalnames.org/parser.json'
+eol_search_api_url: 'http://eol.org/api/search/1.0.json'
+eol_pages_api_url: 'http://eol.org/api/pages/1.0/'
+alchemy_api_url: 'http://access.alchemyapi.com/calls/text/TextGetRankedNamedEntities'
+alchemy_api_key: 'xxxxxxxxxxxxxx'
+carousel_size: 10
+elastic_server: 'http://localhost:9200'
+elastic_index: 'canent'
+enable_dowbloads: false
+
+development:
+  adapter: mysql2
+  host: localhost
+  username:
+  password:
+  database: article_semanticizer_dev
+
+test:
+  adapter: mysql2
+  host: localhost
+  username:
+  password:
+  database: article_semanticizer_test
+
+production:
+  adapter: mysql2
+  host: localhost
+  username:
+  password:
+  database: article_semanticizer

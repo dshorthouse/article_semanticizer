@@ -1,0 +1,58 @@
+#article
+  - if @result.nil?
+    #summary Article not found.
+  
+  - else
+    %div.article
+      %p.citation
+        #{Rinku.auto_link @result[:citation][:content]}
+        - if @result[:pdf]
+          %span.pdf
+            %a{ :href => "#{@result[:pdf]}" } PDF
+        - if @result[:txt]
+          %span.txt
+            %a{ :href=> "#{@result[:txt]}" } OCR
+
+      - if @result[:abstract][:content]
+        %div.abstract
+          %h3 Abstract
+          %div #{@result[:abstract][:content]}
+
+      %div.media
+        - if @result[:jpg]
+          %div.image
+            %img{ :src => @result[:jpg], :width => '100%', :alt => "Front cover for: %s" % @result[:citation][:content] }
+
+        %div.names
+          - if @result[:full_text][:places].size > 0
+            - sorted_places = @result[:full_text][:places].sort_by{ |n| n["name"] }
+            -content_for :scripts do
+              :javascript
+                $(function() { ArticleSemanticizer.places.init(#{sorted_places.to_json}); });
+            %h4 Places
+            %ul.places
+              - sorted_places.each do |place|
+                %li.name
+                  %a{ :href=> "/?q=full_text.places.name:#{place[:name].gsub(' ', '+')}" }= place[:name]
+            #map-canvas
+
+          - if @result[:full_text][:scientific_names].size > 0
+            %h4 Scientific Names
+            %ul.scientific
+              - @result[:full_text][:scientific_names].sort.each do |rns|
+                %li.name
+                  %a{ :href=> "/?q=#{rns.gsub(' ', '+')}" }= rns
+
+          - if @result[:full_text][:vernacular_names].size > 0
+            - sorted_vernaculars = @result[:full_text][:vernacular_names].sort_by{ |n| n["name"] }
+            %h4 Vernacular Names
+            %ul.vernaculars
+              - sorted_vernaculars.each do |rns|
+                - if rns[:language] == 'en'
+                  %li.name
+                    %a{ :href=> "/?q=#{rns[:name].gsub(' ', '+')}" }= rns[:name]
+            %ul.vernaculars
+              - sorted_vernaculars.each do |rns|
+                - if rns[:language] == 'fr'
+                  %li.name
+                    %a{ :href=> "/?q=#{rns[:name].gsub(' ', '+')}" }= rns[:name]

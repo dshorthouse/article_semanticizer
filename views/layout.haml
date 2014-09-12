@@ -1,0 +1,16 @@
+!!! 5
+%html
+  %head
+    %meta{ :charset => "UTF-8" }/
+    %title The Canadian Entomologist Search
+    %link{ :href => '/main.css', :rel => 'stylesheet', :type => 'text/css' }
+    %script{ :src => '/javascript/jquery-1.11.0.min.js', :type => 'text/javascript' }
+    %script{ :src => '/javascript/typeahead.bundle.min.js', :type => 'text/javascript' }
+    %script{ :src => '/javascript/application.js', :type => 'text/javascript' }
+    = yield_content :scripts
+  %body
+    %a{ :href => "/" }
+      %h1.logo The Canadian Entomologist (1868-2002) Search Demo
+    #about
+      %a{:href => "/about"} About
+    = yield
