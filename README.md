@@ -1,12 +1,10 @@
 Article Semanticizer
 ==========================================
 
-[http://www.sinatrarb.com/](Sinatra)-based application and rub-based utilities to index scientific articles for scientific names, vernacular names, and entities. Indexing routines make use of the [http://gnrd.globalnames.org/api](GlobalNames Recognition and Discovery), [http://resolver.globalnames.org/api](GlobalNames Resolver), [http://eol.org/api](Encyclopedia of Life), and [http://www.alchemyapi.com/](Alchemy) APIs. This source code is released under MIT license.
+[Sinatra](http://www.sinatrarb.com/)-based application and rub-based utilities to index scientific articles for scientific names, vernacular names, and entities. Indexing routines make use of the [GlobalNames Recognition and Discovery](http://gnrd.globalnames.org/api), [GlobalNames Resolver](http://resolver.globalnames.org/api), [Encyclopedia of Life](http://eol.org/api), and [Alchemy](http://www.alchemyapi.com/) APIs. This source code is released under MIT license.
 
     Developer: David P. Shorthouse
     Email: davidpshorthouse@gmail.com
-
-[![Build Status](https://secure.travis-ci.org/dshorthouse/SimpleMappr.png?branch=master)](http://travis-ci.org/dshorthouse/SimpleMappr)
 
 Requirements
 --------------------------
