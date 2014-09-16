@@ -109,7 +109,7 @@ ArticleSemanticizer.places = (function($, window, document) {
 
           circle.setMap(this.map);
           this.overlays.push(circle);
-          this.map.setCenter(center);
+          this.map.fitBounds(circle.getBounds());
         break;
 
         case 'rectangle':
@@ -124,7 +124,7 @@ ArticleSemanticizer.places = (function($, window, document) {
 
           rectangle.setMap(this.map);
           this.overlays.push(rectangle);
-          this.map.setCenter(new google.maps.LatLng(bounds.getCenter().lat(), bounds.getCenter().lng()));
+          this.map.fitBounds(rectangle.getBounds());
         break;
 
         case 'polygon':
@@ -139,7 +139,7 @@ ArticleSemanticizer.places = (function($, window, document) {
 
           polygon.setMap(this.map);
           this.overlays.push(polygon);
-          this.map.setCenter(new google.maps.LatLng(polygon.getBounds().getCenter().lat(), polygon.getBounds().getCenter().lng()));
+          this.map.fitBounds(polygon.getBounds());
         break;
       }
     },
