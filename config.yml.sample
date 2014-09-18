@@ -10,7 +10,7 @@ alchemy_api_key: 'xxxxxxxxxxxxxx'
 carousel_size: 10
 elastic_server: 'http://localhost:9200'
 elastic_index: 'canent'
-enable_dowbloads: false
+enable_downloads: false
 
 development:
   adapter: mysql2
