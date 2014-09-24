@@ -10,8 +10,8 @@ class ARTICLESEMANTICIZER < Sinatra::Base
   set :public_folder, 'public'
 
   options = {
-      :tracker => ArticleSemanticizer::Config.google_ua_account,
-      :domain => ArticleSemanticizer::Config.google_ua_domain
+      tracker: ArticleSemanticizer::Config.google_ua_account,
+      domain: ArticleSemanticizer::Config.google_ua_domain
       }
   use Rack::GoogleAnalytics, options if environment == :production
 
@@ -68,14 +68,15 @@ class ARTICLESEMANTICIZER < Sinatra::Base
     bounds = (params[:b] || "0,0,0,0").split(",").map(&:to_f) rescue [0,0,0,0]
     polygon = YAML::load(params[:p] || "[[0,0]]").map{ |n| n.reverse } rescue []
 
-    body = { query: {} }
+    body = { query: { match_all: {} } }
     sort = ""
     sort = "year:asc" if sort_year == 'asc'
     sort = "year:desc" if sort_year == 'desc'
 
+    fields = "id,citation.content"
+
     client = Elasticsearch::Client.new
     if searched_term.present?
-      fields = "id,citation.content"
       if searched_term.include?(":")
         components = searched_term.split(":",2)
         body = { query: { match: Hash[components[0], components[1]] } }
@@ -88,7 +89,7 @@ class ARTICLESEMANTICIZER < Sinatra::Base
             bool: {
               should: [
                 match: { "citation.scientific_names" => clean_searched_term, boost: 5.0 },
-                match: { "abstract.scientific_namesname" => clean_searched_term, boost: 2.0 },
+                match: { "abstract.scientific_names" => clean_searched_term, boost: 2.0 },
                 match: { "full_text.scientific_names" => clean_searched_term, boost: 2.0 },
                 match: { "citation.vernacular_names.name" => clean_searched_term, boost: 1.5 },
                 match: { "abstract.vernacular_names.name" => clean_searched_term, boost: 1.5 },
@@ -176,7 +177,7 @@ class ARTICLESEMANTICIZER < Sinatra::Base
   end
 
   get '/main.css' do
-    content_type 'text/css', :charset => 'utf-8'
+    content_type 'text/css', charset: 'utf-8'
     scss :main
   end
   

@@ -27,10 +27,10 @@
   #map-canvas
 
 #results
-  - if @total_results == 0 && !params[:q].nil?
+  - if @results.respond_to?('total_entries') && @results.total_entries == 0 && !params[:q].nil?
     #summary No results found.
 
-  - if @results.total_entries > 0
+  - if @results.respond_to?('total_entries') && @results.total_entries > 0
     #summary= "Page #{@results.current_page.to_i} of #{@results.total_entries} results"
     - @results.each do |r|
       %div.result
