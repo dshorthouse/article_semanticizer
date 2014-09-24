@@ -27,14 +27,14 @@
   #map-canvas
 
 #results
-  - if @results.size == 0 && !params[:q].nil?
+  - if @total_results == 0 && !params[:q].nil?
     #summary No results found.
 
-  - if @results.size > 0
-    #summary= "Page #{@results.current_page} of #{@results.total_entries} results"
+  - if @results.total_entries > 0
+    #summary= "Page #{@results.current_page.to_i} of #{@results.total_entries} results"
     - @results.each do |r|
       %div.result
         %div.citation
-          %a{:href => "/article/#{r.id}"}= r.citation.content
+          %a{:href => "/article/#{r[:fields][:id][0]}"}= r[:fields][:"citation.content"][0]
 
     = paginate @results

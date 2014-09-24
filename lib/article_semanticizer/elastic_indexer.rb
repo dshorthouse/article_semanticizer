@@ -2,11 +2,13 @@ module ArticleSemanticizer
   class ElasticIndexer
     
     def initialize
-      @tire = Tire::Index.new(ArticleSemanticizer::Config.elastic_index)
+      @client = Elasticsearch::Client.new
     end
     
     def delete
-      @tire.delete
+      if @client.indices.exists index: ArticleSemanticizer::Config.elastic_index
+        @client.indices.delete index: ArticleSemanticizer::Config.elastic_index
+      end
     end
 
     def create
@@ -137,7 +139,7 @@ module ArticleSemanticizer
           }
         }
       }
-      @tire.create config
+      @client.indices.create index: ArticleSemanticizer::Config.elastic_index, body: config
     end
 
     def import_scientific_names
@@ -145,11 +147,15 @@ module ArticleSemanticizer
       ResolvedCanonicalForm.find_in_batches(:batch_size => 1_000) do |group|
         scientific_names = []
         group.each do |name|
-          scientific_names << { :type => 'scientific',
-                                :id => name.id,
-                                :name => name.name }
+          scientific_names << { index: {
+                                _id: name.id,
+                                data: {
+                                  id: name.id,
+                                  name: name.name }
+                                }
+                              }
         end
-        @tire.import scientific_names
+        @client.bulk :index => ArticleSemanticizer::Config.elastic_index, :type => 'scientific', :body => scientific_names
         counter += scientific_names.size
         puts "Added #{counter} scientific names"
       end
@@ -160,11 +166,15 @@ module ArticleSemanticizer
       Vernacular.find_in_batches(:batch_size => 1_000) do |group|
         vernacular_names = []
         group.each do |name|
-          vernacular_names << { :type => 'vernacular',
-                                :id => name.id,
-                                :name => name.name }
+          vernacular_names << { index: {
+                                _id: name.id,
+                                data: {
+                                  id: name.id,
+                                  name: name.name }
+                                }
+                              }
         end
-        @tire.import vernacular_names
+        @client.bulk :index => ArticleSemanticizer::Config.elastic_index, :type => 'vernacular', :body => vernacular_names
         counter += vernacular_names.size
         puts "Added #{counter} vernacular names"
       end
@@ -179,33 +189,38 @@ module ArticleSemanticizer
             resolved_names_title = article.resolved_names_title
             resolved_names_abstract = article.resolved_names_abstract
             resolved_names_content = article.resolved_names_content
-            articles << { :type => 'article',
-                          :id => article.id,
-                          :doi => article.doi,
-                          :year => article.year,
-                          :pdf => article.pdf_url,
-                          :txt => article.text_url,
-                          :jpg => article.jpg_url,
-                          :citation => {
-                            :content => article.citation,
-                            :scientific_names => resolved_names_title,
-                            :vernacular_names => article.vernaculars_title
-                          },
-                          :abstract => {
-                            :content => article.abstract,
-                            :scientific_names => resolved_names_abstract,
-                            :vernacular_names => article.vernaculars_abstract
-                          },
-                          :full_text => {
-                            :content => article.full_text,
-                            :scientific_names => resolved_names_content,
-                            :vernacular_names => article.vernaculars_content,
-                            :places => article.places
+            articles << {
+                          index: {
+                            _id: article.id,
+                            data: {
+                              id: article.id,
+                              doi: article.doi,
+                              year: article.year,
+                              pdf: article.pdf_url,
+                              txt: article.text_url,
+                              jpg: article.jpg_url,
+                              citation: {
+                                content: article.citation,
+                                scientific_names: resolved_names_title,
+                                vernacular_names: article.vernaculars_title
+                              },
+                              abstract: {
+                                content: article.abstract,
+                                scientific_names: resolved_names_abstract,
+                                vernacular_names: article.vernaculars_abstract
+                              },
+                              full_text: {
+                                content: article.full_text,
+                                scientific_names: resolved_names_content,
+                                vernacular_names: article.vernaculars_content,
+                                places: article.places
+                              }                            
+                            }
                           }
                         }
           end
         end
-        @tire.import articles
+        @client.bulk :index => ArticleSemanticizer::Config.elastic_index, :type => 'article', :body => articles
         counter += articles.size
         puts "Added #{counter} articles"
       end
