@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require 'sinatra'
-require 'will_paginate/collection'
 
 class ARTICLESEMANTICIZER < Sinatra::Base
   
@@ -89,7 +88,7 @@ class ARTICLESEMANTICIZER < Sinatra::Base
             bool: {
               should: [
                 match: { "citation.scientific_names" => clean_searched_term, boost: 5.0 },
-                match: { "abstract.scientific_names" => clean_searched_term, boost: 2.0 },
+                match: { "abstract.scientific_names" => clean_searched_term, boost: 3.0 },
                 match: { "full_text.scientific_names" => clean_searched_term, boost: 2.0 },
                 match: { "citation.vernacular_names.name" => clean_searched_term, boost: 1.5 },
                 match: { "abstract.vernacular_names.name" => clean_searched_term, boost: 1.5 },
