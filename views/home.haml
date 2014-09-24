@@ -2,27 +2,27 @@
   :javascript
     $(function() { ArticleSemanticizer.init(); ArticleSemanticizer.places.init(); });
 
-%form{:id => "search_form", :method => "get", :action => "/", "accept-charset"=>"UTF-8"}
+%form{id: "search_form", method: "get", action: "/", "accept-charset" => "UTF-8"}
   #form-wrapper.clear
     %div.search-region
-      %input.typeahead{:type => :text, :name => "q", :placeholder => "Psyllus alni", :value => "#{params[:q]}", :size => 40}
-      %input.form-button.submit-button{:type => :submit, :value => "Search"}
-      %input.form-button.submit-button{:id => "reset_form", :type => :reset, :value => "Reset"}
+      %input.typeahead{type: :text, name: "q", placeholder: "Psyllus alni", value: "#{params[:q]}", size: 40}
+      %input.form-button.submit-button{type: :submit, value: "Search"}
+      %input.form-button.submit-button{id: "reset_form", type: :reset, value: "Reset"}
 
     #radios_form
       Sort by
       %label
-        %input{:type => :radio, :name => "sort_year", :value => "asc", :checked => params[:sort_year]=="asc" || nil } year &uarr;
+        %input{type: :radio, name: "sort_year", value: "asc", checked: params[:sort_year]=="asc" || nil } year &uarr;
       %label
-        %input{:type => :radio, :name => "sort_year", :value => "desc", :checked => params[:sort_year]=="desc" || nil } year &darr;
+        %input{type: :radio, name: "sort_year", value: "desc", checked: params[:sort_year]=="desc" || nil } year &darr;
       %label
-        %input{:type => :radio, :name => "sort_year", :value => "", :checked => !params[:sort_year] || params[:sort_year]=="" || nil } score
+        %input{type: :radio, name: "sort_year", value: "", checked: !params[:sort_year] || params[:sort_year]=="" || nil } score
 
-  %input{:type => :hidden, :name => "geo", :id => "geo_type", :value => "#{params[:geo]}"}
-  %input{:type => :hidden, :name => "c", :id => "geo_center", :value => "#{params[:c]}"}
-  %input{:type => :hidden, :name => "r", :id => "geo_radius", :value => "#{params[:r]}"}
-  %input{:type => :hidden, :name => "b", :id => "geo_bounds", :value => "#{params[:b]}"}
-  %input{:type => :hidden, :name => "p", :id => "geo_polygon", :value => "#{params[:p]}"}
+  %input{type: :hidden, name: "geo", id: "geo_type", value: "#{params[:geo]}"}
+  %input{type: :hidden, name: "c", id: "geo_center", value: "#{params[:c]}"}
+  %input{type: :hidden, name: "r", id: "geo_radius", value: "#{params[:r]}"}
+  %input{type: :hidden, name: "b", id: "geo_bounds", value: "#{params[:b]}"}
+  %input{type: :hidden, name: "p", id: "geo_polygon", value: "#{params[:p]}"}
 
   #map-canvas
 
@@ -35,6 +35,6 @@
     - @results.each do |r|
       %div.result
         %div.citation
-          %a{:href => "/article/#{r[:fields][:id][0]}"}= r[:fields][:"citation.content"][0]
+          %a{href: "/article/#{r[:fields][:id][0]}"}= r[:fields][:"citation.content"][0]
 
     = paginate @results

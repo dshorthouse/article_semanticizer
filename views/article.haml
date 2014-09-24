@@ -8,10 +8,10 @@
         #{Rinku.auto_link @result[:citation][:content]}
         - if @result[:pdf]
           %span.pdf
-            %a{ :href => "#{@result[:pdf]}" } PDF
+            %a{href: "#{@result[:pdf]}" } PDF
         - if @result[:txt]
           %span.txt
-            %a{ :href=> "#{@result[:txt]}" } OCR
+            %a{href: "#{@result[:txt]}" } OCR
 
       - if @result[:abstract][:content]
         %div.abstract
@@ -21,7 +21,7 @@
       %div.media
         - if @result[:jpg]
           %div.image
-            %img{ :src => @result[:jpg], :width => '100%', :alt => "Front cover for: %s" % @result[:citation][:content] }
+            %img{src: @result[:jpg], width: '100%', alt: "Front cover for: %s" % @result[:citation][:content] }
 
         %div.names
           - if @result[:full_text][:places].size > 0
@@ -33,7 +33,7 @@
             %ul.places
               - sorted_places.each do |place|
                 %li.name
-                  %a{ :href=> "/?q=full_text.places.name:#{place[:name].gsub(' ', '+')}" }= place[:name]
+                  %a{href: "/?q=full_text.places.name:#{place[:name].gsub(' ', '+')}" }= place[:name]
             #map-canvas
 
           - if @result[:full_text][:scientific_names].size > 0
@@ -41,7 +41,7 @@
             %ul.scientific
               - @result[:full_text][:scientific_names].sort.each do |rns|
                 %li.name
-                  %a{ :href=> "/?q=#{rns.gsub(' ', '+')}" }= rns
+                  %a{href: "/?q=#{rns.gsub(' ', '+')}" }= rns
 
           - if @result[:full_text][:vernacular_names].size > 0
             - sorted_vernaculars = @result[:full_text][:vernacular_names].sort_by{ |n| n["name"] }
@@ -50,9 +50,9 @@
               - sorted_vernaculars.each do |rns|
                 - if rns[:language] == 'en'
                   %li.name
-                    %a{ :href=> "/?q=#{rns[:name].gsub(' ', '+')}" }= rns[:name]
+                    %a{href: "/?q=#{rns[:name].gsub(' ', '+')}" }= rns[:name]
             %ul.vernaculars
               - sorted_vernaculars.each do |rns|
                 - if rns[:language] == 'fr'
                   %li.name
-                    %a{ :href=> "/?q=#{rns[:name].gsub(' ', '+')}" }= rns[:name]
+                    %a{href: "/?q=#{rns[:name].gsub(' ', '+')}" }= rns[:name]
