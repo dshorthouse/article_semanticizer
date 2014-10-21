@@ -19,7 +19,7 @@ module ArticleSemanticizer
               scientific_name_tokenizer: {
                 type: "path_hierarchy",
                 delimiter: " ",
-                skip: 1
+                reverse: true
               }
             },
             filter: {
@@ -49,14 +49,19 @@ module ArticleSemanticizer
                 tokenizer: "keyword",
                 filter: ["lowercase", "asciifolding", :autocomplete]
               },
+              scientific_epithet_index: {
+                type: "custom",
+                tokenizer: :scientific_name_tokenizer,
+                filter: ["lowercase", "asciifolding", :autocomplete]
+              },
+              scientific_genus_abbrev_index: {
+                type: "custom",
+                tokenizer: "keyword",
+                filter: [:genus_abbreviation, "lowercase", "asciifolding", :autocomplete]
+              },
               scientific_name_search: {
                 type: "custom",
                 tokenizer: "keyword",
-                filter: ["lowercase", "asciifolding"]
-              },
-              scientific_epithet_index: {
-                type: "custom",
-                tokenizer: "scientific_name_tokenizer",
                 filter: ["lowercase", "asciifolding"]
               },
               vernacular_name_index: {
@@ -76,13 +81,22 @@ module ArticleSemanticizer
           scientific: {
             properties: {
               id: { type: 'integer', index: 'not_analyzed' },
-              name: { type: 'string', search_analyzer: :scientific_name_search, index_analyzer: :scientific_name_index }
+              name: {
+                type: 'multi_field',
+                path: 'just_name',
+                fields: {
+                  name: { type: 'string', search_analyzer: :scientific_name_search, index_analyzer: :scientific_name_index },
+                  epithet: { type: 'string', search_analyzer: :scientific_name_search, index_analyzer: :scientific_epithet_index },
+                  genus_abbrev: { type: 'string', search_analyzer: :scientific_name_search, index_analyzer: :scientific_genus_abbrev_index }
+                }
+              }
             }
           },
           vernacular: {
             properties: {
               id: { type: 'integer', index: 'not_analyzed' },
-              name: { type: 'string', search_analyzer: :vernacular_name_search, index_analyzer: :vernacular_name_index }
+              name: { type: 'string', search_analyzer: :vernacular_name_search, index_analyzer: :vernacular_name_index },
+              language: { type: 'string', index: 'not_analyzed' }
             }
           },
           article: {
@@ -170,7 +184,8 @@ module ArticleSemanticizer
                                 _id: name.id,
                                 data: {
                                   id: name.id,
-                                  name: name.name }
+                                  name: name.name,
+                                  language: name.language }
                                 }
                               }
         end

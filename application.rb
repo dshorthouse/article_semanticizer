@@ -79,7 +79,19 @@ class ARTICLESEMANTICIZER < Sinatra::Base
       if searched_term.include?(":")
         components = searched_term.split(":",2)
         body = { query: { match: Hash[components[0], components[1]] } }
-      elsif (type == 'scientific' || type == 'vernacular')
+      elsif (type == 'scientific')
+        body = {
+          query: {
+            multi_match: {
+              query: clean_searched_term,
+              type: 'best_fields',
+              fields: ["name", "epithet", "genus_abbrev"],
+              tie_breaker: 0.3
+            }
+          }
+        }
+        fields = "id,name"
+      elsif (type == 'vernacular')
         body = { query: { match: { name: clean_searched_term } } }
         fields = "id,name"
       else
