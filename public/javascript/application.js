@@ -1,4 +1,7 @@
-var ArticleSemanticizer = (function($, window, document) {
+/*global jQuery, window, document, self, encodeURIComponent, google, Bloodhound */
+var ArticleSemanticizer = (function($, window) {
+
+  "use strict";
 
   var _private = {
 
@@ -49,7 +52,7 @@ var ArticleSemanticizer = (function($, window, document) {
     },
     dropdown_selected: function(){
       window.location.href = '/?q='+encodeURIComponent($(this).val());
-    },
+    }
   };
 
   return {
@@ -58,14 +61,17 @@ var ArticleSemanticizer = (function($, window, document) {
     }
   };
 
-}(jQuery, window, document));
+}(jQuery, window));
 
-ArticleSemanticizer.places = (function($, window, document) {
+ArticleSemanticizer.places = (function($, window) {
+
+  "use strict";
+
   var _private = {
     locales: [],
     overlays: [],
     map: {},
-    darwing_manager: {},
+    drawing_manager: {},
     canvas_id: '#map-canvas',
     init: function() {
       this.load_gmap_script();
@@ -88,24 +94,26 @@ ArticleSemanticizer.places = (function($, window, document) {
       this.map = new google.maps.Map($(this.canvas_id)[0], mapOptions);
       google.maps.Polygon.prototype.getBounds = function(){
         var bounds = new google.maps.LatLngBounds();
-        this.getPath().forEach(function(element,index){bounds.extend(element);});
+        this.getPath().forEach(function(element) { bounds.extend(element); });
         return bounds;
       };
     },
     create_overlay: function() {
+      var geo = this.getParameterByName('geo'),
+      coord, center, options, circle, bbox, bounds, rectangle, vertices, paths, polygon;
+
       this.map.setZoom(2);
       this.map.setCenter(new google.maps.LatLng(65, -40));
-      var geo = this.getParameterByName('geo');
 
       switch(geo) {
         case 'circle':
-          var coord = this.getParameterByName("c").split(","),
-              center = new google.maps.LatLng(coord[0], coord[1]),
-              options = {
-                center : center,
-                radius : this.getParameterByName("r")*1000
-              },
-              circle = new google.maps.Circle(options);
+          coord = this.getParameterByName("c").split(",");
+          center = new google.maps.LatLng(coord[0], coord[1]);
+          options = {
+            center : center,
+            radius : this.getParameterByName("r")*1000
+          };
+          circle = new google.maps.Circle(options);
 
           circle.setMap(this.map);
           this.overlays.push(circle);
@@ -113,14 +121,14 @@ ArticleSemanticizer.places = (function($, window, document) {
         break;
 
         case 'rectangle':
-          var bbox = this.getParameterByName("b").split(","),
-              bounds = new google.maps.LatLngBounds(
-                new google.maps.LatLng(bbox[0], bbox[1]),
-                new google.maps.LatLng(bbox[2], bbox[3])
-              ),
-              rectangle = new google.maps.Rectangle({
-                bounds: bounds
-              });
+          bbox = this.getParameterByName("b").split(",");
+          bounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(bbox[0], bbox[1]),
+            new google.maps.LatLng(bbox[2], bbox[3])
+          );
+          rectangle = new google.maps.Rectangle({
+            bounds: bounds
+          });
 
           rectangle.setMap(this.map);
           this.overlays.push(rectangle);
@@ -128,14 +136,14 @@ ArticleSemanticizer.places = (function($, window, document) {
         break;
 
         case 'polygon':
-          var vertices = JSON.parse(this.getParameterByName("p")),
-              paths = [];
-              $.each(vertices, function() {
-                paths.push(new google.maps.LatLng(this[0], this[1]));
-              });
-          var polygon = new google.maps.Polygon({
-                paths: paths
-              });
+          vertices = JSON.parse(this.getParameterByName("p"));
+          paths = [];
+          $.each(vertices, function() {
+            paths.push(new google.maps.LatLng(this[0], this[1]));
+          });
+          polygon = new google.maps.Polygon({
+            paths: paths
+          });
 
           polygon.setMap(this.map);
           this.overlays.push(polygon);
@@ -154,17 +162,15 @@ ArticleSemanticizer.places = (function($, window, document) {
 
       this.overlays = [];
 
-      $('#geo_type').val('');
-      $('#geo_center').val('');
-      $('#geo_radius').val('');
-      $('#geo_bounds').val('');
-      $('#geo_polygon').val('');
+      $.each(['type', 'center', 'radius', 'bounds', 'polygon'], function() {
+        $('#geo_' + this).val('');
+      });
     },
     getParameterByName: function(name) {
         name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            results = regex.exec(window.location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     },
     create_drawing: function() {
       var self = this;
@@ -190,24 +196,26 @@ ArticleSemanticizer.places = (function($, window, document) {
       });
     },
     drawing_done: function(e,scope) {
+      var center, radius, bounds, polygon;
+
       scope.drawing_manager.setOptions({ drawingMode: null });
       scope.overlays.push(e);
       $('#geo_type').val(e.type);
       switch(e.type) {
         case 'circle':
-          var center = e.overlay.getCenter().toUrlValue(),
-              radius = e.overlay.radius/1000;
+          center = e.overlay.getCenter().toUrlValue();
+          radius = e.overlay.radius/1000;
           $('#geo_center').val(center);
           $('#geo_radius').val(radius);
         break;
 
         case 'rectangle':
-          var bounds = e.overlay.getBounds().toUrlValue();
+          bounds = e.overlay.getBounds().toUrlValue();
           $('#geo_bounds').val(bounds);
         break;
 
         case 'polygon':
-          var polygon = "[" + e.overlay.getPath().getArray().toString().replace(/\(/g,"[").replace(/\)/g, "]") + "]";
+          polygon = "[" + e.overlay.getPath().getArray().toString().replace(/\(/g,"[").replace(/\)/g, "]") + "]";
           $('#geo_polygon').val(polygon);
         break;
       }
@@ -252,4 +260,4 @@ ArticleSemanticizer.places = (function($, window, document) {
     }
   };
 
-}(jQuery, window, document));
+}(jQuery, window));
